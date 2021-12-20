@@ -80,6 +80,7 @@ h1.heading:after {
 /* navbar */
 .navbar {
     background-color: #fff;
+    border-bottom: 1px solid rgb(129, 173, 255);
 }
 
 .navbar-menu {
