@@ -1,6 +1,7 @@
 body {
     font-family: "Quicksand", sans-serif;
     color: #333333;
+    overflow: hidden;
 }
 
 .noselect {
@@ -144,7 +145,7 @@ h1.heading:after {
     z-index: 1;
     position: absolute;
     left: 0;
-    bottom: 5rem;
+    bottom: 3rem;
     background-color: rgba(0, 0, 0, 0.8);
 
     border: 3px solid rgba(0, 0, 0, 0.2);
@@ -206,6 +207,16 @@ body.main {
     background-attachment: fixed;
     background-size: cover;  
     background-position: center;
+    overflow: auto;
+    position: relative;
+}
+
+body.main:after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: radial-gradient(circle, transparent 30%, rgb(104, 104, 104) 250%);
+    box-shadow: inset -1rem 0 10rem rgb(88, 88, 88);
 }
 
 .heading {
@@ -240,4 +251,14 @@ body.main {
 
 .content > p {
     text-align: justify;
+}
+
+#bottom-bar {
+    position: fixed;
+    z-index: 100; 
+    bottom: 0; 
+    left: 0;
+    width: 100%;
+    min-height: 0.3rem;
+    background-color: rgb(129, 173, 255);
 }
