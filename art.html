@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Art</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body class="has-navbar-fixed-top">
+    <!-- Navbar -->
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: black;">
+        <div class="navbar-brand">
+            <a class="main navbar-item" href="index.html">
+                <p><i class="bi-house"></i> Home</p>
+            </a>
+            <a role="button" class="navbar-burger burger" id="burger" onclick="toggleBurger()" aria-label="menu" aria-expanded="false" data-target="contents">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div class="navbar-menu" id="contents">
+            <div class="navbar-end">
+                <a class="main navbar-item" href="aboutme.html"><p><i class="bi-file-person"></i> About me</p></a>
+                <a class="main navbar-item" href="photos.html"><p><i class="bi-camera"></i> Photography</p></a>
+                <a class="main navbar-item" href="#"><p><i class="bi-easel"></i> Art</p></a>
+            </div>
+        </div>
+    </nav>
+    <section class="gallery hero">
+        <div class="hero-head">
+            <p class="title is-8 heading">Art</p>
+        </div>
+        <div class="hero-body">
+            <div class="content">
+                Art always has been a passion of mine as it allows me to express what is on my mind. My work ranges from random pencil scribbles, to inked out drawings, to 3D-models created in blender. Anything can be done, only oneself is the limit. Pushing my own boundaries motivates me to get better while having fun at the same time. Please check out a selection of my drawings and 3D-models I did in the past
+            </div>
+        </div>
+        <div class="hero-body">
+            <div class="content">
+                <div class="gallery columns is-multiline">
+                    <div class="card"><img src="assets/2D/atom.jpg"></div>
+                    <div class="card"><img src="assets/2D/biker_man.png"></div>
+                    <div class="card"><img src="assets/2D/box_robot.png"></div>
+                    <div class="card"><img src="assets/2D/corona_cleaner.png"></div>
+                    <div class="card"><img src="assets/2D/dont_shoot.jpg"></div>
+                    <div class="card"><img src="assets/2D/frog_yawn.png"></div>
+                    <div class="card"><img src="assets/2D/hitter.png"></div>
+                    <div class="card"><img src="assets/2D/house.png"></div>
+                    <div class="card"><img src="assets/2D/lesser_dog.png"></div>
+                    <div class="card"><img src="assets/2D/mariya.png"></div>
+                    <div class="card"><img src="assets/2D/ramen.png"></div>
+                    <div class="card"><img src="assets/2D/smash.png"></div>
+                    <div class="card"><img src="assets/2D/suika_man.png"></div>
+                    <div class="card"><img src="assets/3D/bearchan_hw_bg.png"></div>
+                    <div class="card"><img src="assets/3D/ferret3.png"></div>
+                    <div class="card"><img src="assets/3D/render2.png"></div>
+                    <div class="card"><img src="assets/3D/frog_bath.png"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="gallery-modal">
+        <div class="gallery modal-background" id="gallery-background"></div>
+        <div class="gallery modal-content">
+            <p class="image" id="modal-image">
+            </p>
+        </div>
+        <button class="modal-close is-large" aria-label="close" id="gallery-modal-close-button"></button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./scripts/photos.js"></script>
+</body>
+

@@ -1,0 +1,210 @@
+body {
+    font-family: "Quicksand", sans-serif;
+    color: #333333;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+}
+
+.codebox {
+    font-family: monospace;
+    background-color: #e3e3e3;
+}
+
+.section.section-grey {
+    background-color: rgb(245, 245, 245);
+}
+
+.image-container {
+    background-image: linear-gradient(rgba(50, 50, 50, 0.7), rgba(50, 50, 50, 0.9)), url("./assets/dosepix_back.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;  
+    background-position: center;
+}
+
+/* general */
+.hero {
+    font-size: 1.2rem;
+}
+
+ul {
+    list-style-type: disc;
+    margin-left: 2rem;    
+}
+
+.divider {
+    height: 2px;
+    border-radius: 50px;
+    background: #43015485;
+    width: 10rem;
+}
+
+.divider.is-centered {
+    margin: 0 auto;
+}
+
+/* lined heading */
+h1.heading {
+    width: 70%;
+    margin: .7em auto;
+    overflow: hidden;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.8rem;
+    color: #3b3b3b;
+}
+
+@media only screen and (min-width: 600px) {
+    h1.heading:before, h1.heading:after {
+        content: "";
+        display: inline-block;
+        width: 50%;
+        margin: 0 .5em 0 -55%;
+        vertical-align: middle;
+        border-bottom: 1px solid;
+    }
+}
+
+h1.heading:after {
+    margin: 0 -55% 0 .5em;
+}
+
+/* navbar */
+.navbar {
+    background-color: #fff;
+}
+
+.navbar-item {
+    color: gray;
+}
+
+.navbar-item.main {
+    color: whitesmoke;
+}
+
+.navbar-burger span {
+    color: white;
+}
+
+.gallery > .card {
+    box-shadow: none;
+    border-radius: 0;
+    flex: 1;
+    min-width: 20rem;
+    padding: 0rem;
+    margin: 0.5rem;
+    height: max-content;
+}
+
+.gallery > .card :hover {
+    border: 2px solid lightseagreen;
+    cursor: pointer;
+}
+
+.card > img {
+    border: 2px solid whitesmoke;
+    border-radius: 10px;
+}
+
+.gallery.modal-content {
+    margin: auto;
+    width: auto;
+}
+
+#modal-image {
+    width: 100vmin;
+}
+
+.main.column {
+    height: 100vh;
+    padding: 0;
+}
+
+.main.column.right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.main.container {
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    bottom: 5rem;
+    background-color: rgba(0, 0, 0, 0.8);
+
+    border: 3px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5rem;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+
+    margin-left: -2rem;
+    padding: 2rem;
+    padding-left: 4rem;
+    padding-right: 5rem;
+
+    color: whitesmoke;
+    font-size: 1.2rem;
+    box-shadow: 12px 12px 2px 1px rgba(43, 43, 43, 0.418);
+}
+
+.main.container h1 {
+    font-size: 3rem;
+    font-weight: 600;
+    color: whitesmoke;
+    text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+}
+
+.main.container h1.subtitle {
+    font-size: 2rem;
+    font-weight: 300;
+    color: whitesmoke;
+}
+
+body.main {
+    background-image: url("./assets/Photos/IMG_2474_clear.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;  
+    background-position: center;
+}
+
+.heading {
+    width: 70%;
+    margin: .7em auto;
+    overflow: hidden;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.8rem;
+    color: #3b3b3b;
+}
+
+@media only screen and (min-width: 600px) {
+    .heading:before, .heading:after {
+        content: "";
+        display: inline-block;
+        width: 50%;
+        margin: 0 .5em 0 -55%;
+        vertical-align: middle;
+        border-bottom: 5px double;
+    }
+}
+
+.heading:after {
+    margin: 0 -55% 0 .5em;
+}  
+
+.hero-body {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
