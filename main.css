@@ -82,6 +82,10 @@ h1.heading:after {
     background-color: #fff;
 }
 
+.navbar-menu {
+    background-color: black;
+}
+
 .navbar-item {
     color: gray;
 }
@@ -143,32 +147,56 @@ h1.heading:after {
     background-color: rgba(0, 0, 0, 0.8);
 
     border: 3px solid rgba(0, 0, 0, 0.2);
-    border-radius: 5rem;
+    border-radius: 4rem;
     border-bottom-right-radius: 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 
     margin-left: -2rem;
+    margin-right: 2rem;
     padding: 2rem;
     padding-left: 4rem;
     padding-right: 5rem;
 
     color: whitesmoke;
     font-size: 1.2rem;
+    font-weight: 400;
     box-shadow: 12px 12px 2px 1px rgba(43, 43, 43, 0.418);
+    outline: 2px rgb(129, 173, 255) solid;
+    outline-offset: -.5rem;
 }
 
 .main.container h1 {
     font-size: 3rem;
-    font-weight: 600;
+    font-weight: 300;
     color: whitesmoke;
     text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
 }
 
 .main.container h1.subtitle {
-    font-size: 2rem;
-    font-weight: 300;
+    font-size: 1.5rem;
+    font-weight: 400;
     color: whitesmoke;
+}
+
+.main.container hr {
+    border-top: 2px solid rgb(92, 153, 182);
+    margin-top: -1rem; 
+    margin-bottom: 1rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .main.container h1 {
+        font-size: 2rem;
+    }
+
+    .main.container h1.subtitle {
+        font-size: 1rem;
+    }
+
+    .main.container p {
+        font-size: 0.8rem;
+    }    
 }
 
 body.main {
@@ -207,4 +235,8 @@ body.main {
 .hero-body {
     padding-top: 1rem;
     padding-bottom: 1rem;
+}
+
+.content > p {
+    text-align: justify;
 }
