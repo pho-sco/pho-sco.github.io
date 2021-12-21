@@ -161,7 +161,7 @@ h1.heading:after {
         outline: 2px rgba(129, 173, 255, 0) solid;
         opacity: 0;
     }
-    30% {
+    10% {
         transform: translateX(-100%);
         outline: 2px rgba(129, 173, 255, 0) solid;
         opacity: 0;
@@ -311,4 +311,12 @@ body.main:after {
     width: 100%;
     min-height: 0.3rem;
     background-color: rgb(129, 173, 255);
+}
+
+#contact-button {
+    background-color: rgba(31, 109, 255, 0.555);
+    border: 1px solid rgb(14, 34, 71);
+    margin: 1rem;
+    padding-left: 3rem;
+    padding-right: 3rem;
 }
