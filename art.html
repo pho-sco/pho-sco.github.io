@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="main.css">
 </head>
 
-<body class="has-navbar-fixed-top">
+<body class="has-navbar-fixed-top initial-hide" id="main-body">
     <!-- Navbar -->
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: black;">
         <div class="navbar-brand">
@@ -31,11 +31,11 @@
         </div>
     </nav>
     <section class="gallery hero">
-        <div class="hero-head">
+        <div class="description hero-head">
             <p class="title is-8 heading">Art</p>
         </div>
         <div class="hero-body">
-            <div class="content">
+            <div class="description content">
                 <p>
                     Art has always been a passion of mine as it allows me to express what is on my mind. My work ranges from random pencil scribbles to inked out drawings and 3D models created in blender. Anything can be done, only oneself is the limit. Pushing my own boundaries motivates me to get better while having fun at the same time. Please check out a selection of drawings and 3D models I did in the past
                 </p>
@@ -44,23 +44,29 @@
         <div class="hero-body">
             <div class="content">
                 <div class="gallery columns is-multiline">
-                    <div class="card"><img src="assets/2D/atom.jpg"></div>
-                    <div class="card"><img src="assets/2D/biker_man.png"></div>
-                    <div class="card"><img src="assets/2D/box_robot.png"></div>
-                    <div class="card"><img src="assets/2D/corona_cleaner.png"></div>
-                    <div class="card"><img src="assets/2D/dont_shoot.jpg"></div>
-                    <div class="card"><img src="assets/2D/frog_yawn.png"></div>
-                    <div class="card"><img src="assets/2D/hitter.png"></div>
-                    <div class="card"><img src="assets/2D/house.png"></div>
-                    <div class="card"><img src="assets/2D/lesser_dog.png"></div>
-                    <div class="card"><img src="assets/2D/mariya.png"></div>
-                    <div class="card"><img src="assets/2D/ramen.png"></div>
-                    <div class="card"><img src="assets/2D/smash.png"></div>
-                    <div class="card"><img src="assets/2D/suika_man.png"></div>
-                    <div class="card"><img src="assets/3D/bearchan_hw_bg.png"></div>
-                    <div class="card"><img src="assets/3D/ferret3.png"></div>
-                    <div class="card"><img src="assets/3D/render2.png"></div>
-                    <div class="card"><img src="assets/3D/frog_bath.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/atom.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/box_robot.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/dont_shoot.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/santa.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/biker_man.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/corona_cleaner.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/boy.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/hitter.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/suika_man.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/frog_yawn.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/cat.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/me.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/ramen.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/snowman.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/birdy.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/audio.jpg"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/smash.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/mariya.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/2D/lesser_dog.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/3D/render2.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/3D/frog_bath.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/3D/bearchan_hw_bg.png"></div>
+                    <div class="card"><img class="img-crop" src="assets/3D/ferret3.png"></div>
             </div>
         </div>
     </section>
@@ -74,7 +80,12 @@
         <button class="modal-close is-large" aria-label="close" id="gallery-modal-close-button"></button>
     </div>
 
+    <footer class="footer">
+        <p>© Sebastian Schmidt</p>
+    </footer>
+
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="./scripts/index.js"></script>
     <script src="./scripts/photos.js"></script>
 </body>

@@ -13,3 +13,10 @@ dropMenu.onclick = function() {
     burgerIcon.classList.remove('is-active');
     dropMenu.classList.remove('is-active');
 }
+
+// Title page
+main_container = document.getElementById('main-container');
+var body = document.getElementById('main-body');
+$(document).ready(() => {
+	body.classList.remove('initial-hide');
+});

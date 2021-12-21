@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="main.css">
 </head>
 
-<body class="has-navbar-fixed-top">
+<body class="has-navbar-fixed-top initial-hide" id="main-body">
     <!-- Navbar -->
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: black;">
         <div class="navbar-brand">
@@ -32,11 +32,11 @@
     </nav>
 
     <section class="gallery hero">
-        <div class="hero-head">
+        <div class="description hero-head">
             <p class="title is-8 heading">Photography</p>
         </div>
         <div class="hero-body">
-            <div class="content">
+            <div class="description content">
                 <p>
                     I love to cycle long distances on sunny days. I always got one of my cameras with me when I'm on the road. Therefore, I'm constantly ready to take snapshots of new discoveries. This made me appreciate the beauty of nature and the creativity of mankind and helped me to always keep an eye on the details. Things appearing normal and dull often turn out to be beautiful when observed in the right manner. Please see a small selection of the photos I took in 2021 with two cameras: A Canon EOS M50 digital camera and a Canon A-1 film camera.
                 </p>
@@ -102,7 +102,12 @@
         <button class="modal-close is-large" aria-label="close" id="gallery-modal-close-button"></button>
     </div>
 
+    <footer class="footer">
+        <p>© Sebastian Schmidt</p>
+    </footer>
+
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="./scripts/index.js"></script>
     <script src="./scripts/photos.js"></script>
 </body>

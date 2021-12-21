@@ -2,7 +2,13 @@ body {
     font-family: "Quicksand", sans-serif;
     color: #333333;
     overflow: hidden;
+    transition: opacity 0.25s;
+    -webkit-transition: opacity 0.25s; /* Safari */
 }
+
+body.initial-hide {
+    opacity: 0;
+} 
 
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
@@ -81,7 +87,7 @@ h1.heading:after {
 /* navbar */
 .navbar {
     background-color: #fff;
-    border-bottom: 1px solid rgb(129, 173, 255);
+    border-bottom: 0px solid rgb(129, 173, 255);
 }
 
 .navbar-menu {
@@ -94,10 +100,18 @@ h1.heading:after {
 
 .navbar-item.main {
     color: whitesmoke;
+    font-size: 1.3rem;
+    font-weight: 600;
 }
 
 .navbar-burger span {
     color: white;
+}
+
+.gallery.columns {
+    display: flex;
+    align-items: center;
+      vertical-align: bottom;
 }
 
 .gallery > .card {
@@ -141,14 +155,38 @@ h1.heading:after {
     padding: 2rem;
 }
 
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+        outline: 2px rgba(129, 173, 255, 0) solid;
+        opacity: 0;
+    }
+    30% {
+        transform: translateX(-100%);
+        outline: 2px rgba(129, 173, 255, 0) solid;
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        outline: 2px rgb(129, 173, 255) solid;
+        opacity: 1;
+    }
+}  
+
 .main.container {
+    animation-name: slideInFromLeft;
+    animation-duration: 2s;
+    animation-delay: 0;
+    animation-timing-function: ease-out;
+
     z-index: 1;
     position: absolute;
     left: 0;
     bottom: 3rem;
-    background-color: rgba(0, 0, 0, 0.8);
-
-    border: 3px solid rgba(0, 0, 0, 0.2);
+    background: rgb(15,38,94);
+    background: linear-gradient(100deg, rgba(15,38,94,0.9136029411764706) 0%, rgba(18,38,73,0.896796218487395) 53%, rgba(72,91,117,0.8603816526610644) 100%);
+            
+    border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 4rem;
     border-bottom-right-radius: 0;
     border-top-left-radius: 0;
@@ -165,19 +203,27 @@ h1.heading:after {
     font-weight: 400;
     box-shadow: 12px 12px 2px 1px rgba(43, 43, 43, 0.418);
     outline: 2px rgb(129, 173, 255) solid;
-    outline-offset: -.5rem;
+    outline-offset: -1rem;
+}
+
+@keyframes bounce {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
 .main.container h1 {
-    font-size: 3rem;
-    font-weight: 300;
+    font-size: 3.5rem;
+    font-weight: 600;
     color: whitesmoke;
     text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+    font-variant: small-caps;
 }
 
 .main.container h1.subtitle {
     font-size: 1.5rem;
-    font-weight: 400;
+    font-weight: 600;
     color: whitesmoke;
 }
 
@@ -217,6 +263,10 @@ body.main:after {
     top: 0; left: 0; bottom: 0; right: 0;
     background: radial-gradient(circle, transparent 30%, rgb(104, 104, 104) 250%);
     box-shadow: inset -1rem 0 10rem rgb(88, 88, 88);
+}
+
+.mono {
+    font-family: "Space Mono", monospace;
 }
 
 .heading {
