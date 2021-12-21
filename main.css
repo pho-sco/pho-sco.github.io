@@ -6,6 +6,13 @@ body {
     -webkit-transition: opacity 0.25s; /* Safari */
 }
 
+@media only screen and (min-width: 600px) {
+    body.main {
+        border: 2rem solid black;
+        border-bottom: 0;
+    }
+}
+
 body.initial-hide {
     opacity: 0;
 } 
