@@ -153,19 +153,6 @@ async function load_train_set(buffer, predict) {
     return tensors;
 }
 
-async function load_chunks(buffer) {
-    let tensors = {image: [], velocity: []}
-    for (let i = 0; i < buffer.image.length; i++) {
-        let tensor = await tf.browser.fromPixels(buffer.image[i]).div(255);
-        // console.log(buffer.image[i]);
-        tensors.image.push( tensor );
-        tensors.velocity.push( buffer.velocity[i] );
-    }
-    tensors.image = tf.stack([tf.stack(tensors.image)]);
-    tensors.velocity = tf.stack([tensors.velocity]);
-    return tensors;
-}
-
 // Generators for training data
 const bufferSize = 512;
 async function* train_generator() {
@@ -209,13 +196,6 @@ async function* train_generator() {
 export async function train_network() {
     if(image_buffer.length <= 5) return;
 
-    /* 
-    let tensors = await load_chunks({image: image_buffer, label: label_buffer, velocity: velocity_buffer}, false);
-    await model.fit([tf.stack(tensors.image), tf.stack(tensors.velocity)], tf.stack(tensors.label), {batchSize: 16, epochs: 1, shuffle: true}).then(info => {
-        console.log('Accuracy', info.history.loss);
-    });
-    */
-
     console.log(image_buffer.length);
     console.log(label_hist);
     isTraining = true;
@@ -244,44 +224,59 @@ export async function train_network() {
     start_animation();
 }
 
+
+async function load_chunks(buffer) {
+    let tensors = {image: [], velocity: []}
+    for (let i = 0; i < buffer.image.length; i++) {
+        let tensor = await tf.browser.fromPixels(buffer.image[i]).div(255);
+        // console.log(buffer.image[i]);
+        tensors.image.push( tensor );
+        tensors.velocity.push( buffer.velocity[i] );
+    }
+    tensors.image = tf.stack([tf.stack(tensors.image)]);
+    tensors.velocity = tf.stack([tensors.velocity]);
+    return tensors;
+}
+
 var predict_img_buffer = [];
 var predict_velocity_buffer = [];
-export async function predict_frame(img, velocity) {
-    tf.engine().startScope();
-
+export async function add_prediction_frame(img, velocity) {
     const image = await load(img);
-    predict_img_buffer.push( image );
+    let tensor = await tf.browser.fromPixels(image).div(255);
+    predict_img_buffer.push( tensor );
     predict_velocity_buffer.push( velocity );
 
-    // Fill buffers
+    if (predict_img_buffer.length > TIME_DIM) {
+        tf.dispose(predict_img_buffer[0]);
+        predict_img_buffer.shift();
+        predict_velocity_buffer.shift();
+    }
+}
+
+export var isPredicting;
+export async function predict_frame() {
+    // Buffer not full
     if (predict_img_buffer.length < TIME_DIM) {
         return [0, 0];
     }
 
-    if (predict_img_buffer.length > TIME_DIM) {
-        predict_img_buffer.shift();
-        predict_velocity_buffer.shift();
-    }
-
-    let tensors = await load_chunks({image: predict_img_buffer, velocity: predict_velocity_buffer}, true);
-    let pred = await model.predict([tensors.image, tensors.velocity]).dataSync();
-    let show = [0, 0, 0, 0];
-    for (let i = 0; i < 4; i++) {
-        show[i] = Math.floor(pred[i] * 100) / 100;
-    }
-
+    isPredicting = true;
+    tf.engine().startScope();
+    // let tensors = await load_chunks({image: predict_img_buffer, velocity: predict_velocity_buffer}, true);
+    // let pred = await model.predict([tensors.image, tensors.velocity]).dataSync();
+    let pred = await model.predict([tf.stack([tf.stack(predict_img_buffer)]), tf.stack([predict_velocity_buffer])]).dataSync();
     let keysPressed = {'w': false, 'a': false, 's': false, 'd': false}
-    if (show[0] > 0.5) keysPressed.w = true;
-    if (show[1] > 0.4) keysPressed.a = true;
-    if (show[2] > 0.1) keysPressed.s = true;
-    if (show[3] > 0.4) keysPressed.d = true;
+    if (pred[0] > 0.5) keysPressed.w = true;
+    if (pred[1] > 0.4) keysPressed.a = true;
+    if (pred[2] > 0.1) keysPressed.s = true;
+    if (pred[3] > 0.4) keysPressed.d = true;
 
     // Give brakes higher priority
     if (keysPressed.w & keysPressed.s) {
         keysPressed.w = false;
     }
-    // console.log(show);
 
     tf.engine().endScope();
+    isPredicting = false;
     return keysPressed;
 }

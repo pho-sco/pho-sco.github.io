@@ -1,7 +1,15 @@
 import * as THREE from 'https://cdn.skypack.dev/three';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader';
-import { start, isTraining, to_tensor, predict_frame, train_network } from './training.js';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'https://cdn.skypack.dev/three-mesh-bvh';
+import { start, isTraining, isPredicting, add_prediction_frame, to_tensor, predict_frame, train_network } from './training.js';
+import * as particles from './particles.js';
 
+// Add the extension functions
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
+
+var collision_reset = document.getElementById('collision-reset');
 var ui_container = document.getElementById('ui-container');
 
 // Labels
@@ -22,7 +30,7 @@ const canvas = document.getElementById('3D-canvas');
 var renderer_small;
 const canvas_small = document.getElementById('3D-canvas-small');
 
-var camera, controls, scene, renderer;
+var camera, scene, renderer;
 const manager = new THREE.LoadingManager();
 manager.onLoad = model_init;
 
@@ -31,7 +39,8 @@ init();
 var collidableMeshList = [];
 var models = {
     track: {url: './assets/3D/track.glb', collidable: true, shadow_rec: true, shadow_cast: false, visible: true},
-    bounds: {url: './assets/3D/bounds.glb', collidable: true, shadow_rec: true, shadow_cast: true, visible: true},
+    bounds: {url: './assets/3D/bounds.glb', collidable: true, shadow_rec: false, shadow_cast: true, visible: true},
+    trees: {url: './assets/3D/trees.glb', collidable: false, shadow_rec: true, shadow_cast: true, visible: true},
     player: {url: './assets/3D/player.glb', collidable: false, shadow_rec: true, shadow_cast: true, visible: true},
     invisible: {url: './assets/3D/invisible.glb', collidable: true, shadow_rec: false, shadow_cast: false, visible: false},
 };
@@ -42,6 +51,7 @@ function load_model(model, scale) {
     loader.load(model.url, function(gltf) {
         gltf.scene.traverse(function(child) {
             if (child.isMesh) {
+                console.log(child);
                 if (model.shadow_rec) {
                     child.receiveShadow = true;
                 }
@@ -91,14 +101,14 @@ function init() {
 
     // directional
     const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-    dirLight.position.set( -1, 0.75, 1 );
+    dirLight.position.set( 1, 3, 1 );
     dirLight.position.multiplyScalar( 50);
     dirLight.name = "dirlight";
 
     scene.add( dirLight );
 
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 4096*2;
+    dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
 
     var d = 30;
     dirLight.shadow.camera.left = -d;
@@ -205,13 +215,6 @@ var ground_raycaster;
 var road_raycaster;
 const player_y_offset = 0.08;
 
-const arrowHelper = new THREE.ArrowHelper(
-    new THREE.Vector3(),
-    new THREE.Vector3(),
-    0.25,
-    0xffff00
-);
-
 function model_init() {
     collidableMeshList.push(goal_trigger);
 
@@ -221,8 +224,12 @@ function model_init() {
     
     // Circular collider, last number defines radius
     ground_raycaster = new THREE.Raycaster(player.position, new THREE.Vector3(0, -1, 0), 0, 1);
+    ground_raycaster.firstHitOnly = true;
     road_raycaster = new THREE.Raycaster(player.position, new THREE.Vector3(0, -1, 0), 0, 0.2);
-    // scene.add(arrowHelper);
+    road_raycaster.firstHitOnly = true;
+
+    // Add particles
+    particles.add_to_scene(scene);
 
     // player.add(camera);
     // Start render
@@ -238,6 +245,7 @@ document.addEventListener('keydown', (event) => {
 
     if (event.shiftKey) {
         predict = true;
+        predict_label.style.visibility = 'visible';
     }
 
     if (event.ctrlKey) {
@@ -250,6 +258,7 @@ document.addEventListener('keyup', (event) => {
 
     if (!event.shiftKey) {
         predict = false;
+        predict_label.style.visibility = 'hidden';
     }
 
     if (!event.ctrlKey) {
@@ -271,16 +280,19 @@ function get_wall_collisions(rc, dir) {
 
     let intersections = rc.intersectObjects(collidableMeshList, true);
     if (intersections.length > 0) {
-        console.log(intersections.length);
         if (intersections[0].object.name == 'goal_trigger') {
             console.log('Goal');
-            train_network();
+            if (!predict) {
+                train_network();
+            } else {
+                if (lap_time > 10) new_lap();
+            }
             return false;
         } else if (intersections[0].object.name == 'InvisibleWalls') {
             reset_player();
+        } else if (collision_reset.checked) {
+            reset_player();
         }
-        // player.lookAt( intersections[ 0 ].face.normal );
-        // angle += drive_direction.angleTo(intersections[ 0 ].face.normal);
         return true;
     }
     return false;
@@ -288,12 +300,6 @@ function get_wall_collisions(rc, dir) {
 
 function get_road_collisions(rc, dir) {
     rc.set(player.position, dir);
-    /*
-    arrowHelper.position.copy(player.position);
-    arrowHelper.setDirection(dir);
-    arrowHelper.setLength(10);
-    */
-
     let intersections = rc.intersectObjects(collidableMeshList, true);
     if (intersections.length > 0) {
         player.position.y = intersections[0].point.y + player_y_offset;
@@ -354,7 +360,8 @@ function update(delta, keysPressed, predict) {
     player.quaternion.rotateTowards(rotateQuarternion, 0.2);
 
     // Calculate velocity
-    if (!get_wall_collisions(road_raycaster, drive_direction)) {
+    let wall_collions = get_wall_collisions(road_raycaster, drive_direction);
+    if (!wall_collions) {
         // Velocity
         if (keysPressed['w']) {
             velocity += 3 * delta;
@@ -363,8 +370,7 @@ function update(delta, keysPressed, predict) {
         if (keysPressed['s']) {
             if (predict) {
                 // Avoid network to slow down to 0
-                if (velocity < 0.1) {
-                    console.log('slowdown');
+                if (velocity < 1) {
                     velocity += 3 * delta;
                 } else {
                     velocity -= 8 * delta;
@@ -439,6 +445,9 @@ function show_button_state(label) {
 
 // === RENDER ===
 const clock = new THREE.Clock();
+var keysPressed_last = {};
+var input;
+var skip_cnt = 0;
 async function render() {
     // Rescale if display size changed
     resizeRendererToDisplaySize(renderer);
@@ -453,29 +462,34 @@ async function render() {
     renderer_small.render(scene, camera);
 
     // Get input from keyboard or network
-    let input;
-    if (predict) {
-        predict_label.style.visibility = 'visible';
-        input = await predict_frame(renderer_small.domElement.toDataURL(), velocity / 10);
+    if (predict & !isPredicting) {
+        add_prediction_frame(renderer_small.domElement.toDataURL(), velocity / 10);
+        if (skip_cnt > Math.ceil(120 / (1 / delta))) {
+            predict_frame().then((res) => {
+                input = res;
+            });
+            skip_cnt = 0;
+        } else {
+            skip_cnt++;
+        }
     } else {
-        predict_label.style.visibility = 'hidden';
         input = keysPressed;
     }
 
-    show_button_state(get_label(input));
+    let label = get_label(input);
+    show_button_state(label);
     update(delta, input, predict);
 
     // Store frames as training data
     if (!predict) {
         // Store frame is car is moving and touching the road
         if ((velocity > 0) & touchingRoad) {
-            await to_tensor(renderer_small.domElement.toDataURL(), get_label(keysPressed), velocity / 10);
+            await to_tensor(renderer_small.domElement.toDataURL(), label, velocity / 10);
         }
     }
 }
 
-// Called after training is finished
-export function start_animation() {
+function new_lap() {
     lap_count++;
     lap_counter.innerHTML = lap_count;
 
@@ -484,9 +498,13 @@ export function start_animation() {
     }
 
     time_best_label.innerHTML = Math.floor(best_time);
-
-    reset_player();
     lap_time = 0;
+}
+
+// Called after training is finished
+export function start_animation() {
+    new_lap();
+    reset_player();
     // Read clock to reset it
     clock.getDelta();
     animate();

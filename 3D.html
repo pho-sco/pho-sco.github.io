@@ -34,13 +34,13 @@
     </nav>
 
     <div class="hero">
-        <div class="hero-header">
-            <h1 class="heading">Driving school</h1>
-        </div>
         <div class="hero-body game">
             <div id="ui-container">
                 <div class="canvas-container">
                     <canvas class="ui" id="3D-canvas"></canvas>
+                </div>
+                <div class="ui" style="bottom: -4rem; left: 0; right: 0; margin-left: auto; margin-right: auto; text-align: center;">
+                    <h1 class="heading" style="color: white">Driving school</h1>
                 </div>
                 <div class="ui" id="predict-label" style="top: 1rem; left: 0; right: 0; margin-left: auto; margin-right: auto; text-align: center; color: red; font-size: x-large;">
                     <label>AI is driving</label>
@@ -84,14 +84,20 @@
                     <p>Network vision</p>
                     <canvas id="3D-canvas-small"></canvas>
                 </div>
-            </div><br>
+
+                <div class="column">
+                    <label class="checkbox">
+                        <input id="collision-reset" type="checkbox"> Reset on collision
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div class="hero-body">
             <div class="container">
                 <p class="title is-3">Instructions</p>
                 <ul>
-                    <li>Drive the car around the track</li>
+                    <li>Drive the car around the track via wasd-keys, r-key resets the car to the start</li>
                     <li>Training data is acquired while you are driving</li>
                     <li>A neural network is trained once you pass the finish line</li>
                     <li>Press and hold Shift to let the AI drive the car</li>
