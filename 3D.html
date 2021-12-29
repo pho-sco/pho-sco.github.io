@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Art</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="3D.css">
+</head>
+
+<body class="has-navbar-fixed-top initial-hide" id="main-body">
+    <!-- Navbar -->
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation" style="background-color: black;">
+        <div class="navbar-brand">
+            <a class="main navbar-item" href="index.html">
+                <p><i class="bi-house"></i> Home</p>
+            </a>
+            <a role="button" class="navbar-burger burger" id="burger" onclick="toggleBurger()" aria-label="menu" aria-expanded="false" data-target="contents">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div class="navbar-menu" id="contents">
+            <div class="navbar-end">
+                <a class="main navbar-item" href="#"><p><i class="bi-cpu"></i> AI</p></a>
+                <a class="main navbar-item" href="photos.html"><p><i class="bi-camera"></i> Photography</p></a>
+                <a class="main navbar-item" href="art.html"><p><i class="bi-easel"></i> Art</p></a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-header">
+            <h1 class="heading">Driving school</h1>
+        </div>
+        <div class="hero-body game">
+            <div id="ui-container">
+                <div class="canvas-container">
+                    <canvas class="ui" id="3D-canvas"></canvas>
+                </div>
+                <div class="ui" id="predict-label" style="top: 1rem; left: 0; right: 0; margin-left: auto; margin-right: auto; text-align: center; color: red; font-size: x-large;">
+                    <label>AI is driving</label>
+                </div>
+                <div class="ui" style="top:1rem; left: 1rem; text-align: left">
+                    <p>Lap: <label id="lap-counter"></label></p>
+                    <p>Time: <label id="time-label"></label> s</p>
+                    <p>Best: <label id="time-best-label"></label> s</p>
+                </div>
+                <div class="ui" style="top:1rem; right: 1rem; text-align: left;">
+                    <p>Velocity: <label id="velocity-label"></label></p>
+                </div>
+                <div class="ui" id="training-div" style="bottom: 0.5rem; width: 90%; left:50%; transform: translate(-50%, -50%);">
+                    <p style="color: white;">Network is training...</p>
+                    <progress class="progress is-info" id="training-progress" value="0" max="100"></progress>
+                </div>
+            </div><br>
+
+            <div class="columns">
+                <div class="column">
+                    <div class="dpad-container">
+                        <div class="dpad dpad-up">
+                            <img src="./assets/3D/arrow.svg">
+                        </div>
+                        <div class="dpad dpad-left">
+                            <img src="./assets/3D/arrow.svg" style="transform:rotate(-90deg);">
+                        </div>
+                        <div class="dpad dpad-center">
+                            <img src="./assets/3D/arrow_center.svg">
+                        </div>
+                        <div class="dpad dpad-right">
+                            <img src="./assets/3D/arrow.svg" style="transform:rotate(90deg);">
+                        </div>
+                        <div class="dpad dpad-down">
+                            <img src="./assets/3D/arrow.svg" style="transform:rotate(180deg);">
+                        </div>
+                    </div>    
+                </div>
+
+                <div class="column small-canvas-container">
+                    <p>Network vision</p>
+                    <canvas id="3D-canvas-small"></canvas>
+                </div>
+            </div><br>
+        </div>
+
+        <div class="hero-body">
+            <div class="container">
+                <p class="title is-3">Instructions</p>
+                <ul>
+                    <li>Drive the car around the track</li>
+                    <li>Training data is acquired while you are driving</li>
+                    <li>A neural network is trained once you pass the finish line</li>
+                    <li>Press and hold Shift to let the AI drive the car</li>
+                    <li>Try to train the network until the AI can complete the track by itself!</li>
+                </ul>
+            </div><br>
+
+            <div class="container" style="text-align: justify;">
+                <p class="title is-3">Description</p>
+                <p>
+                    Simple racing game engine implemented in <a href="https://threejs.org/">three.js</a>. The game is rendered twice, a large version for the user to play and a small one to provide training data for a neural network. The input of this network is resembled by the "Network vision"-element. The images have a resolution of 30 px x 30 px. 
+                </p>
+                <p>
+                    The neural network is implemented in <a href="https://www.tensorflow.org/js">TensorFlow.js</a>. Training data is acquired continously. Training starts once a lap is completed. The training data is heavily biased since mostly the forward button is pressed during driving the car. This bias is avoided by recording a histogram of button presses and sampling images with the inverted distribution accordingly.
+                </p>
+                <p>
+                    The training itself is performed in a loop of 10 iterations. A buffer of 512 is randomly filled with images for each iteration. Aftwerwards, the network is trained for 1 epoch with a batch size of 8. 
+                </p>
+                <p>
+                    The network is a combination of a CNN and RNN. 5 images are simultaneously used as input to the network. Featues for each image are extracted via a CNN. A time-distributed layer provides theses outputs to a LSTM. An input consisting of velocity values is concatenated and the desired output size of 4 is achieved via dense layers. Each value represents the probability one of the four directional buttons are pressed. The output has a softmax activation and the optimization is performed via Adam and a categorical cross entropy loss.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© Sebastian Schmidt</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="./scripts/index.js"></script>
+    <script type="module" src="./scripts/3D.js"></script>
+    <script type="module" src="./scripts/training.js"></script>
+</body>
+
