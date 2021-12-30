@@ -107,6 +107,11 @@ export async function to_tensor(img, label, velocity) {
     image_buffer.push(image);
     label_buffer.push(label);
     velocity_buffer.push(velocity);
+    if (image_buffer.length > 10000) {
+        image_buffer.shift();
+        label_buffer.shift();
+        velocity_buffer.shift();
+    }
 
     let key = get_input_key(label);
     label_hist[key]++;

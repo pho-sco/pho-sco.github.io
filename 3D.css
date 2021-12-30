@@ -6,10 +6,12 @@
 }
 
 .game {
-    border: 3px solid black;
-    border-radius: 1rem;
+    border: 3px solid rgb(102, 102, 102);
+    border-radius: 2rem;
+    border-bottom-right-radius: 7rem;
+    border-top: 1rem double gray;
     margin: 3rem;
-    background-color: rgb(215, 221, 240);
+    background: rgb(221, 230, 255);
 }
 
 #ui-container {
@@ -33,6 +35,7 @@
     margin: auto;
     padding: 0;
     width: 50%;
+    margin-bottom: 1rem;
   
     display: grid;
     grid-template-columns: fit-content(5rem) fit-content(5rem) fit-content(5rem);
@@ -48,7 +51,7 @@
 .dpad {
     align-self: center;
     justify-self: center;
-    height: 41px;
+    height: 40px;
 }
 .dpad-up { 
     grid-area: dpad-up; 

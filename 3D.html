@@ -42,7 +42,7 @@
                 <div class="ui" style="bottom: -4rem; left: 0; right: 0; margin-left: auto; margin-right: auto; text-align: center;">
                     <h1 class="heading" style="color: white">Driving school</h1>
                 </div>
-                <div class="ui" id="predict-label" style="top: 1rem; left: 0; right: 0; margin-left: auto; margin-right: auto; text-align: center; color: red; font-size: x-large;">
+                <div class="ui" id="predict-label" style="visibility: hidden; top: 1rem; left: 0; right: 0; margin-left: auto; margin-right: auto; text-align: center; color: red; font-size: x-large;">
                     <label>AI is driving</label>
                 </div>
                 <div class="ui" style="top:1rem; left: 1rem; text-align: left">
@@ -60,7 +60,7 @@
             </div><br>
 
             <div class="columns">
-                <div class="column">
+                <div class="column" style="margin-bottom: 1rem;">
                     <div class="dpad-container">
                         <div class="dpad dpad-up">
                             <img src="./assets/3D/arrow.svg">
@@ -80,14 +80,21 @@
                     </div>    
                 </div>
 
-                <div class="column small-canvas-container">
+                <div class="column small-canvas-container" style="font-size: larger;">
                     <p>Network vision</p>
                     <canvas id="3D-canvas-small"></canvas>
                 </div>
 
-                <div class="column">
+                <div class="column" style="font-size: larger;">
+                    <p>Options</p>
                     <label class="checkbox">
                         <input id="collision-reset" type="checkbox"> Reset on collision
+                    </label><br>
+                    <label class="checkbox">
+                        <input id="train-check" type="checkbox"> Don't train on goal
+                    </label><br>
+                    <label class="checkbox">
+                        <input id="mute-check" type="checkbox"> Mute engine
                     </label>
                 </div>
             </div>
@@ -130,6 +137,7 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="./scripts/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.35/Tone.js" integrity="sha512-lnXhe/3DWFLkSDEO0+Hb2ygRAR5YskNl3pIUUNaVIWmG9BiPujrfjTL7MtOlKk74V5XflNuq9jj54TaMTYoe1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="module" src="./scripts/3D.js"></script>
     <script type="module" src="./scripts/training.js"></script>
 </body>

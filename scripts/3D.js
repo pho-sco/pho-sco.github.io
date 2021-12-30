@@ -10,6 +10,8 @@ THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
 var collision_reset = document.getElementById('collision-reset');
+var mute_check = document.getElementById('mute-check');
+var train_check = document.getElementById('train-check');
 var ui_container = document.getElementById('ui-container');
 
 // Labels
@@ -39,8 +41,10 @@ init();
 var collidableMeshList = [];
 var models = {
     track: {url: './assets/3D/track.glb', collidable: true, shadow_rec: true, shadow_cast: false, visible: true},
+    start_lights: {url: './assets/3D/start_lights.glb', collidable: false, shadow_rec: false, shadow_cast: true, visible: true},
     bounds: {url: './assets/3D/bounds.glb', collidable: true, shadow_rec: false, shadow_cast: true, visible: true},
     trees: {url: './assets/3D/trees.glb', collidable: false, shadow_rec: true, shadow_cast: true, visible: true},
+    ground: {url: './assets/3D/ground.glb', collidable: false, shadow_rec: true, shadow_cast: false, visible: true},
     player: {url: './assets/3D/player.glb', collidable: false, shadow_rec: true, shadow_cast: true, visible: true},
     invisible: {url: './assets/3D/invisible.glb', collidable: true, shadow_rec: false, shadow_cast: false, visible: false},
 };
@@ -51,7 +55,6 @@ function load_model(model, scale) {
     loader.load(model.url, function(gltf) {
         gltf.scene.traverse(function(child) {
             if (child.isMesh) {
-                console.log(child);
                 if (model.shadow_rec) {
                     child.receiveShadow = true;
                 }
@@ -123,6 +126,7 @@ function init() {
     // scene.add(lightHelper);
 
     // GROUND
+    /*
     const groundGeo = new THREE.PlaneGeometry(10000, 10000);
     const groundMat = new THREE.MeshLambertMaterial( {color: 0xffffff} );
     groundMat.color.setHSL(100/256, 0.7, 0.2);
@@ -132,6 +136,7 @@ function init() {
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add( ground );
+    */
 
     function vertexShader_() {
         return `
@@ -215,6 +220,7 @@ var ground_raycaster;
 var road_raycaster;
 const player_y_offset = 0.08;
 
+var start_lights;
 function model_init() {
     collidableMeshList.push(goal_trigger);
 
@@ -229,11 +235,55 @@ function model_init() {
     road_raycaster.firstHitOnly = true;
 
     // Add particles
-    particles.add_to_scene(scene);
+    // particles.add_to_scene(scene);
+
+    // Turn of start lights
+    start_lights = models.start_lights.mesh.children;
+    start_lights[1].visible = false;
+    start_lights[2].visible = false;
+    start_lights[3].visible = false;
+
+    // Add sound
+    synth_init();
+    Tone.start();
 
     // player.add(camera);
     // Start render
+    reset_player();
     animate();
+}
+
+var synth;
+var synth_vol;
+var start_synth;
+function synth_init() {
+    // ENGINE SOUNDS
+    synth = new Tone.Synth({
+        "oscillator": {
+            "type": 'square',
+        },
+        "envelope": {
+            "attack": 0.001,
+            "decay": 0.1,
+            "sustain": 0.5,
+            "release": 0.1,
+            "attackCurve" : "exponential",      
+        }
+    });
+
+    // const noise = new Tone.Noise("brown").start();
+    // const filter = new Tone.AutoFilter(10).start();
+    const distortion = new Tone.Distortion(2);
+    const autoFilter = new Tone.AutoFilter({frequency: 100, octaves: 4});
+    synth_vol = new Tone.Volume(0).toDestination();
+    synth.connect(distortion);
+    distortion.connect(autoFilter);
+    autoFilter.connect(synth_vol);
+    synth_vol.connect(Tone.Master);
+    synth.triggerAttack();
+
+    // START
+    start_synth = new Tone.Synth().toDestination();
 }
 
 // KEY CONTROLS
@@ -266,6 +316,10 @@ document.addEventListener('keyup', (event) => {
     }
 }, false);
 
+mute_check.addEventListener('change', () => {
+    synth_vol.mute = mute_check.checked;
+});
+
 function get_label(kp) {
     let label = [0, 0, 0, 0];
     label[0] = kp['w'] ? 1 : 0;
@@ -282,15 +336,17 @@ function get_wall_collisions(rc, dir) {
     if (intersections.length > 0) {
         if (intersections[0].object.name == 'goal_trigger') {
             console.log('Goal');
-            if (!predict) {
+            if (!train_check.checked & !predict) {
+                synth.triggerRelease();
                 train_network();
             } else {
-                if (lap_time > 10) new_lap();
+                if (lap_time > 10) {
+                    start_synth.triggerAttackRelease("C4", "8n");
+                    new_lap();
+                }
             }
             return false;
-        } else if (intersections[0].object.name == 'InvisibleWalls') {
-            reset_player();
-        } else if (collision_reset.checked) {
+        } else if (collision_reset.checked | intersections[0].object.name == 'InvisibleWalls') {
             reset_player();
         }
         return true;
@@ -310,20 +366,38 @@ function get_road_collisions(rc, dir) {
 }
 
 // Update every frame
-const DIRECTIONS = ['w', 'a', 's', 'd'];
-const drive_direction = new THREE.Vector3();
+const drive_direction = new THREE.Vector3(0, 0, 1);
 const rotate_axis = new THREE.Vector3(0, 1, 0);
 const rotateQuarternion = new THREE.Quaternion();
 
 var velocity = 0;
 var angle = 0;
-
 function reset_player() {
+    // drive direction
+    drive_direction.x = 0;
+    drive_direction.z = 1;
+
     player.position.x = 0;
     player.position.z = 0;
     velocity = 0;
     angle = 0;
+    rotateQuarternion.setFromAxisAngle(rotate_axis, 0);
+    player.setRotationFromQuaternion( rotateQuarternion );
+
+    set_camera(3);
+    start_lights_reset();
+    start_lights_animate();
     lap_time = 0;
+}
+
+function set_camera(dist) {
+    camera.position.x = player.position.x - dist * drive_direction.x;
+    camera.position.y = player.position.y + 0.5;
+    camera.position.z = player.position.z - dist * drive_direction.z;
+
+    player_helper.copy( player.position );
+    player_helper.y += 0.5;
+    camera.lookAt( player_helper );
 }
 
 var touchingRoad = false;
@@ -400,14 +474,15 @@ function update(delta, keysPressed, predict) {
         velocity = 0.03;
     }
 
-    let dist = 3;
-    camera.position.x = player.position.x - dist * drive_direction.x;
-    camera.position.y = player.position.y + 0.5;
-    camera.position.z = player.position.z - dist * drive_direction.z;
+    // Engine sound
+    if (velocity <= 0) {
+        synth.setNote(10);
+    } else {
+        synth.setNote(Math.sqrt(velocity)*30);
+    }
 
-    player_helper.copy( player.position );
-    player_helper.y += 0.5;
-    camera.lookAt( player_helper );
+    set_camera(3);
+    // particles.set_particles_to(player.position);
 
     // Update text
     velocity_label.innerHTML = Math.floor(velocity * 10);
@@ -489,6 +564,13 @@ async function render() {
     }
 }
 
+function wait(duration) {
+    let time = 0;
+    while (time < duration) {
+        time += clock.getDelta();
+    }
+}
+
 function new_lap() {
     lap_count++;
     lap_counter.innerHTML = lap_count;
@@ -504,10 +586,47 @@ function new_lap() {
 // Called after training is finished
 export function start_animation() {
     new_lap();
-    reset_player();
+    synth.triggerAttack();
+
     // Read clock to reset it
     clock.getDelta();
+
+    reset_player();
     animate();
+}
+
+var light_id = 1;
+const light_times = [0.5, 1, 1.5];
+const light_tunes = ["F4", "F4", "C5"];
+var light_time = 0;
+var isStart = false;
+function start_lights_reset() {
+    start_lights[1].visible = false;
+    start_lights[2].visible = false;
+    start_lights[3].visible = false;
+
+    light_id = 1;
+    light_time = 0;
+}
+
+function start_lights_animate() {
+    isStart = true;
+    if (light_id >= 4) {
+        isStart = false;
+        return;
+    }
+    requestAnimationFrame( start_lights_animate );
+
+    const delta = clock.getDelta();
+    if (light_time > light_times[light_id - 1]) {
+        start_lights[light_id].visible = true;
+        start_synth.triggerAttackRelease(light_tunes[light_id - 1], "8n");
+        light_id++;
+    }
+    light_time += delta;
+
+    resizeRendererToDisplaySize(renderer);
+    renderer.render(scene, camera);
 }
 
 function animate() {
@@ -515,7 +634,7 @@ function animate() {
     requestAnimationFrame( animate );
 
     // Stop animation while training
-    if (isTraining) {
+    if (isStart | isTraining) {
         return;
     }
 
