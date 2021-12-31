@@ -4,6 +4,9 @@ import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'https:
 import { start, isTraining, isPredicting, add_prediction_frame, to_tensor, predict_frame, train_network } from './training.js';
 import * as particles from './particles.js';
 
+var loading_hero = document.getElementById('loading-hero');
+var game_hero = document.getElementById('game-hero');
+
 // Add the extension functions
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
@@ -36,6 +39,8 @@ var camera, scene, renderer;
 const manager = new THREE.LoadingManager();
 manager.onLoad = model_init;
 
+loading_hero.classList.remove('show');
+game_hero.classList.add('show');
 init();
 
 var collidableMeshList = [];

@@ -8,16 +8,34 @@
 .game {
     border: 3px solid rgb(102, 102, 102);
     border-radius: 2rem;
-    border-bottom-right-radius: 7rem;
-    border-top: 1rem double gray;
+    /* border-bottom-right-radius: 7rem; */
+    border-image: url("assets/3D/gb_border.svg")
+        45% 45% 45% 45% /       /* slice */
+        4rem /                  /* width */
+        0                       /* outset */
+        stretch;
     margin: 3rem;
     background: rgb(221, 230, 255);
+}
+
+#game-hero {
+    display: none;
+}
+
+@media (min-width: 1025px){
+    #game-hero.show {
+        display: block;
+    }
+    #nonopt-hero {
+        display: none;
+    }
 }
 
 #ui-container {
     position: relative;
     height: 600px;
     margin: 1rem;
+    margin-top: 3rem;
     border: 0.7rem solid #5461d4;
     border-bottom: 3rem solid #5461d4;
     border-radius: 0.4rem;
@@ -67,4 +85,12 @@
 }
 .dpad-down { 
     grid-area: dpad-down; 
+}
+
+#loading-hero {
+    display: none;
+}
+
+#loading-hero.show {
+    display: block;
 }

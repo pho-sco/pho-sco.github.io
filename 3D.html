@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Art</title>
+    <title>AI</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
@@ -33,7 +33,16 @@
         </div>
     </nav>
 
-    <div class="hero">
+    <div id="loading-hero" class="hero show">
+        <div class="hero-body">
+            <div class="container">
+                <h1 style="font-size: x-large; font-weight: 600;">Page is loading...</h1>
+                Please be patient while the page is loading! Drive a race car and train an AI to let it drive for you.
+            </div>
+        </div>
+    </div>
+
+    <div id="game-hero" class="hero">
         <div class="hero-body game">
             <div id="ui-container">
                 <div class="canvas-container">
@@ -109,13 +118,16 @@
                     <li>A neural network is trained once you pass the finish line</li>
                     <li>Press and hold Shift to let the AI drive the car</li>
                     <li>Try to train the network until the AI can complete the track by itself!</li>
-                </ul>
+                </ul><br>
+                <p>A top-down view of the map</p>
+                <img src="./assets/3D/map.png">
             </div><br>
 
             <div class="container" style="text-align: justify;">
                 <p class="title is-3">Description</p>
                 <p>
-                    Simple racing game engine implemented in <a href="https://threejs.org/">three.js</a>. The game is rendered twice, a large version for the user to play and a small one to provide training data for a neural network. The input of this network is resembled by the "Network vision"-element. The images have a resolution of 30 px x 30 px. 
+                    The whole project was prototyped in about one week. 
+                    A simple racing game engine is implemented in <a href="https://threejs.org/">three.js</a>. <a href="https://tonejs.github.io/">tone.js</a> is used as sound engine. The game is rendered twice, a large version for the user to play and a small one to provide training data for a neural network. The input of this network is resembled by the "Network vision"-element. The images have a resolution of 30 px x 30 px. 
                 </p>
                 <p>
                     The neural network is implemented in <a href="https://www.tensorflow.org/js">TensorFlow.js</a>. Training data is acquired continously. Training starts once a lap is completed. The training data is heavily biased since mostly the forward button is pressed during driving the car. This bias is avoided by recording a histogram of button presses and sampling images with the inverted distribution accordingly.
@@ -130,6 +142,15 @@
         </div>
     </div>
 
+    <div id="nonopt-hero" class="hero">
+        <div class="hero-body">
+            <div class="container">
+                <h1 style="font-size: x-large; font-weight: 600;">This page is not optimized for mobile</h1>
+                An x-resolution of at least 1025px is required! The application is resource heavy and relies on keyboard input. Please understand the inconvenience.
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <p>© Sebastian Schmidt</p>
     </footer>
@@ -138,7 +159,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="./scripts/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.35/Tone.js" integrity="sha512-lnXhe/3DWFLkSDEO0+Hb2ygRAR5YskNl3pIUUNaVIWmG9BiPujrfjTL7MtOlKk74V5XflNuq9jj54TaMTYoe1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="module" src="./scripts/3D.js"></script>
-    <script type="module" src="./scripts/training.js"></script>
+
+    <script>
+        // Only load scripts if resolution is large enough
+        function add_script(src) {
+            var head = document.getElementsByTagName("head")[0];
+            s = document.createElement('script');
+            s.setAttribute('type', 'module');
+            s.setAttribute('src', src);
+            head.insertBefore(s, head.firstChild);
+        }
+
+        if (window.matchMedia('(min-width: 1025px)').matches){
+            console.log("Yes");
+            add_script("./scripts/3D.js");
+            add_script("./scripts/training.js");
+        }
+    </script>    
 </body>
 
