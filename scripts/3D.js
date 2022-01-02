@@ -2,7 +2,7 @@ import * as THREE from 'https://cdn.skypack.dev/three';
 import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'https://cdn.skypack.dev/three-mesh-bvh';
 import { start, isTraining, isPredicting, add_prediction_frame, to_tensor, predict_frame, train_network } from './training.js';
-import * as particles from './particles.js';
+// import * as particles from './particles.js';
 
 var loading_hero = document.getElementById('loading-hero');
 var game_hero = document.getElementById('game-hero');
@@ -634,7 +634,7 @@ function start_lights_animate() {
     renderer.render(scene, camera);
 }
 
-function animate() {
+function animate(time) {
     // Endless loop calling render function
     requestAnimationFrame( animate );
 
@@ -643,5 +643,6 @@ function animate() {
         return;
     }
 
+    // particles.update(time, velocity);
     render();
 }

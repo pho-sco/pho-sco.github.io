@@ -22,7 +22,14 @@
     display: none;
 }
 
+#loading-hero {
+    display: none;
+}
+
 @media (min-width: 1025px){
+    #loading-hero.show {
+        display: block;
+    }
     #game-hero.show {
         display: block;
     }
@@ -51,9 +58,13 @@
 
 .dpad-container {  
     margin: auto;
-    padding: 0;
-    width: 50%;
-    margin-bottom: 1rem;
+    padding-left: 22px;
+    padding-top: 22px;
+    width: 170px;
+    height: 170px;
+    border: 2px solid gray;
+    border-radius: 50%;
+    background-color: rgb(244, 247, 255);
   
     display: grid;
     grid-template-columns: fit-content(5rem) fit-content(5rem) fit-content(5rem);
@@ -89,8 +100,4 @@
 
 #loading-hero {
     display: none;
-}
-
-#loading-hero.show {
-    display: block;
 }
