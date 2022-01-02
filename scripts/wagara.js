@@ -3,7 +3,9 @@ import * as tf from 'https://cdn.skypack.dev/@tensorflow/tfjs';
 const pattern_canvas = document.getElementById('pattern-canvas');
 const model = await tf.loadLayersModel('./assets/wagara_model/model.json');
 const generate_button = document.getElementById('generate-button');
+const use_gradient = document.getElementById('use-gradient');
 const quant_slider = $( "#slider-range" );
+const random_button = document.getElementById('random-button');
 
 const color_one = document.getElementById('color-one');
 const color_two = document.getElementById('color-two');
@@ -64,7 +66,7 @@ function set_colors(pred, quant_bins, colors) {
     return buffer;
 }
 
-function set_colors_large(pred, quant_bins, colors) {
+function set_colors_large(pred, quant_bins, colors, use_grad) {
     var buffer = new Uint8ClampedArray(w * 10 * h * 10 * 4);
 
     for (let i = 0; i < 10; i++) {
@@ -76,9 +78,17 @@ function set_colors_large(pred, quant_bins, colors) {
                     let c = p[y][x];
                     c = quantize(c, quant_bins);
                     let pos = (pos_large + y * (10 * w) + x) * 4;
-                    buffer[pos] = colors[c].r;
-                    buffer[pos + 1] = colors[c].g;
-                    buffer[pos + 2] = colors[c].b;
+
+                    let grad;
+                    if (use_grad) {
+                        grad = (j * h + y) / (10 * h) + 0.3;
+                    } else {
+                        grad = 1;
+                    }
+                    // grad = Math.max( 0, Math.min( grad, 1) );
+                    buffer[pos] = colors[c].r * grad;
+                    buffer[pos + 1] = colors[c].g * grad;
+                    buffer[pos + 2] = colors[c].b * grad;
                     buffer[pos + 3] = 255;
                 }
             }        
@@ -102,10 +112,10 @@ function predict_large() {
         let j_rand = Math.floor( Math.random() * 10 );
 
         for (let i = 0; i < 10; i++) {
-            rand_vec[i_rand] = (2 * i / 10 - 1) * 10;
+            rand_vec[i_rand] = (2 * i / 10 - 1) * 5;
             let res_row = [];
             for (let j = 0; j < 10; j++) {
-                rand_vec[j_rand] = (2 * j / 10 - 1) * 10;
+                rand_vec[j_rand] = (2 * j / 10 - 1) * 5;
                 let p = model.predict( tf.stack([rand_vec]) ).arraySync()[0];
                 res_row.push( p.slice() );
             }
@@ -114,6 +124,7 @@ function predict_large() {
     });
 }
 
+const pattern_hero = document.getElementById('pattern-hero');
 function make_image() {
     if (pred == undefined) return;
 
@@ -127,7 +138,7 @@ function make_image() {
 
     let buffer;
     if (large) {
-        buffer = set_colors_large(pred, quant_bins, colors);
+        buffer = set_colors_large(pred, quant_bins, colors, use_gradient.checked);
     } else {
         buffer = set_colors(pred, quant_bins, colors);
     }
@@ -142,8 +153,8 @@ function make_image() {
     ctx.putImageData(img, 0, 0);
     
     var dataUri = pattern_canvas.toDataURL();
-    document.body.style.backgroundImage = "url(" + dataUri + ")";    
-    document.body.style.backgroundSize = "cover";
+    pattern_hero.style.background = "url(" + dataUri + ") no-repeat center center fixed"
+    pattern_hero.style.backgroundSize = "cover";
 }
 
 generate_button.addEventListener('click', () => {
@@ -158,6 +169,14 @@ generate_button.addEventListener('click', () => {
 color_one.addEventListener('change', make_image);
 color_two.addEventListener('change', make_image);
 color_three.addEventListener('change', make_image);
+random_button.addEventListener('click', () => {
+    color_one.value = "#" + ((1<<24)*Math.random() | 0).toString(16);
+    color_two.value = "#" + ((1<<24)*Math.random() | 0).toString(16);
+    color_three.value = "#" + ((1<<24)*Math.random() | 0).toString(16);
+    make_image();
+})
+
+use_gradient.addEventListener('change', make_image);
 
 // jQuery range slider
 $( function() {
