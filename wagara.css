@@ -1,0 +1,19 @@
+#pattern-canvas-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#pattern-canvas {
+    margin: auto;
+    width: 50%;
+    border: 3px solid white;
+    border-radius: 0.5rem;
+}
+
+#pattern-ui-container {
+    background-color: white; 
+    padding: 2rem; 
+    border: 1px solid black; 
+    border-radius: 1rem;
+}
