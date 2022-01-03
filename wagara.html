@@ -35,7 +35,7 @@
         </div>
     </nav>
 
-    <div id="pattern-hero" class="hero" style="height: 100vh;">
+    <div id="pattern-hero" class="hero">
         <div class="hero-head" style="background-color: black; color: white;">
             <p class="heading" style="color: white;">Pattern generator</p>
         </div>
@@ -50,10 +50,16 @@
                     <button class="button is-link is-fullwidth" type="button" id="generate-button">Generate</button>
                 </div><br>
                 <div class="columns">
-                    <div class="column">
-                        <label class="checkbox">
-                            <input id="use-gradient" type="checkbox"> Use gradient 
-                        </label>
+                    <div class="column is-3">
+                        <p>Model select</p>
+                    </div>
+                    <div class="column is-9">
+                        <div class="select">
+                            <select id="model-select">
+                              <option>VAE</option>
+                              <option>GAN</option>
+                            </select>
+                        </div>        
                     </div>
                 </div>
                 <div class="columns">
@@ -74,7 +80,19 @@
                     <div class="column is-9">
                         <div id="slider-range"></div>
                     </div>
-                </div>                  
+                </div>
+                <div class="columns">
+                    <div class="column is-3">
+                        <label class="checkbox">
+                            <input id="use-gradient" type="checkbox"> Use gradient 
+                        </label>
+                    </div>
+                    <div class="column is-3">
+                        <label class="checkbox">
+                            <input id="use-quantize" type="checkbox"> Quantize colors 
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -84,7 +102,10 @@
             <div class="container" style="text-align: justify;">
                 <p class="title is-3">Description</p>
                 <p>
-                    A variational autoencoder (VAE) was trained with repeating image patterns. A VAE was chosen instead of a GAN since the training dataset is small. The autoencoder has a latent space of 10 where each parameter is forced to a normal distribution. The ability to match input and output images was optimized during training. Additionally, a loss on the image edges was defined to improve the quality of the output when placing images next to each other. Inference of the decoder returns an image of 96 x 96 pixels from an input vector of 10 elements. 10 x 10 images are predicted where two parameters of the input are varied linearly along the x- and y-axis. 
+                    A variational autoencoder (VAE) and a generative adverserial network (GAN) are trained with repeating image patterns. The autoencoder has a latent space of 10 where each parameter is forced to a normal distribution. The ability to match input and output images was optimized during training. Additionally, a loss on the image edges was defined to improve the quality of the output when placing images next to each other. Inference of the decoder returns an image of 96 x 96 pixels from an input vector of 10 elements. 10 x 10 images are predicted where two parameters of the input are varied linearly along the x- and y-axis. 
+                </p>
+                <p>
+                    The generator of the GAN uses an input of 100 random values to generate patterns. The image output is created in the same way as for the VAE. Please consider the complexity of the different models when predicting images. The GAN's generator is larger in size and therefore requires more time for a prediction. The GAN is able to generate images with sharp edges, resulting in fabrique-like patterns. The VAE on the other hand yields more roundish images.
                 </p>
             </div>
         </div>
