@@ -327,3 +327,8 @@ body.main:after {
     padding-left: 3rem;
     padding-right: 3rem;
 }
+
+.footer {
+    background-color: black;
+    color: whitesmoke;
+}

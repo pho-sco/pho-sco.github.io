@@ -44,7 +44,7 @@ function random_vector() {
     let size, fac;
     if (gan) {
         size = 100;
-        fac = 10;
+        fac = 5;
     } else {
         size = 10;
         fac = 5;
@@ -120,7 +120,7 @@ function set_colors_large(pred, quant_bins, colors, use_grad, use_quant=false) {
                         grad = 1;
                     }
 
-                    let c = p[y][x];
+                    let c = 0.5 * (p[y][x][0] + 1);
                     let q = quantize(c, quant_bins);
                     let color;
                     if (use_quant) {
@@ -157,7 +157,7 @@ function predict_large() {
     let fac, num;
     if (gan) {
         num = 100;
-        fac = 100;
+        fac = 10;
     } else {
         num = 10;
         fac = 5;
@@ -168,10 +168,10 @@ function predict_large() {
         let j_rand = Math.floor( Math.random() * num );
 
         for (let i = 0; i < 10; i++) {
-            rand_vec[i_rand] = (2 * i / 10 - 1) * fac;
+            rand_vec[i_rand] = (2 * (i / 10) - 1) * fac;
             let res_row = [];
             for (let j = 0; j < 10; j++) {
-                rand_vec[j_rand] = (2 * j / 10 - 1) * fac;
+                rand_vec[j_rand] = (2 * (j / 10) - 1) * fac;
                 let p = model.predict( tf.stack([rand_vec]) ).arraySync()[0];
                 res_row.push( p.slice() );
             }
@@ -241,7 +241,7 @@ $( function() {
         range: true,
         min: 0,
         max: 100,
-        values: [ 70, 80 ],
+        values: [ 20, 80 ],
         slide: function( event, ui ) {
             make_image();
         }
