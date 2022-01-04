@@ -44,9 +44,9 @@ function random_vector() {
     let size, fac;
     if (gan) {
         size = 100;
-        fac = 5;
+        fac = 10;
     } else {
-        size = 10;
+        size = 15;
         fac = 5;
     }
     for (let i = 0; i < size; i++) {
@@ -155,9 +155,9 @@ function predict_large() {
     let fac, num;
     if (gan) {
         num = 100;
-        fac = 10;
+        fac = 100;
     } else {
-        num = 10;
+        num = 15;
         fac = 5;
     }
     tf.tidy(() => {
