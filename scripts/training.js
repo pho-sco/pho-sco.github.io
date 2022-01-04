@@ -29,7 +29,7 @@ function create_model() {
     const flat = tf.layers.flatten().apply(conv3);
     // const dense1 = tf.layers.dense({units: 100, activation: 'selu'}).apply(flat);
     const dense2 = tf.layers.dense({units: 50, activation: 'selu'}).apply(flat);
-    const dense3 = tf.layers.dense({units: 10, activation: 'selu'}).apply(dense2);
+    const dense3 = tf.layers.dense({units: 3, activation: 'selu'}).apply(dense2);
     // const dense4 = tf.layers.dense({units: 2}).apply(dense3);
     const model = tf.model({inputs: input, outputs: dense3});
     return model;
@@ -44,20 +44,21 @@ function create_time_model() {
     const model = create_model();
     const td = tf.layers.timeDistributed({layer: model}).apply(input);
     // const lstm1 = tf.layers.lstm({units: 128, returnSequences: true}).apply(td);
-    const lstm2 = tf.layers.lstm({units: 16, returnSequences: false}).apply(td);
+    const lstm2 = tf.layers.lstm({units: 256, returnSequences: false}).apply(td);
     // const flat = tf.layers.flatten().apply(lstm);
 
     const concat = tf.layers.concatenate().apply([lstm2, dense_vel])
     const dense = tf.layers.dense({units: 16, activation: 'selu'}).apply(concat);
-    const drop = tf.layers.dropout({rate: 0.1}).apply(dense);
-    const dense2 = tf.layers.dense({units: 4, activation: 'softmax'}).apply(drop);
+    const dense2 = tf.layers.dense({units: 4, activation: 'softmax'}).apply(dense);
 
     return tf.model({inputs: [input, input_vel], outputs: dense2});
 }
 
 const model = create_time_model();
+const optimizer = tf.train.adam();
+optimizer.learningRate = 0.001;
 model.compile({
-    optimizer: 'adam',
+    optimizer: optimizer,
     loss: 'categoricalCrossentropy',
     // metrics: ['accuracy'],
 });

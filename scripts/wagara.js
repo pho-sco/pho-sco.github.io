@@ -126,14 +126,12 @@ function set_colors_large(pred, quant_bins, colors, use_grad, use_quant=false) {
                     if (use_quant) {
                         color = colors[q];
                     } else {
-                        let k = q - 1;
-                        if (k < 0) {
+                        if (q == 2) {
                             color = colors[q];
                         } else {
-                            color = color_mix(colors[k], colors[q], 0.5 * (c + 1));
+                            color = color_mix(colors[q], colors[q+1], 0.5 * (c + 1));
                         }
                     }
-
                     buffer[pos] = color.r * grad;
                     buffer[pos + 1] = color.g * grad;
                     buffer[pos + 2] = color.b * grad;
