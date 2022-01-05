@@ -11,7 +11,7 @@ training_progress.value = 0;
 export var isTraining = false;
 const DIM_X = 30;
 const DIM_Y = 30;
-const TIME_DIM = 5;
+const TIME_DIM = 3;
 function create_model() {
     const input = tf.input({shape: [DIM_X, DIM_Y, 3]});
 
@@ -28,8 +28,8 @@ function create_model() {
 
     const flat = tf.layers.flatten().apply(conv3);
     // const dense1 = tf.layers.dense({units: 100, activation: 'selu'}).apply(flat);
-    const dense2 = tf.layers.dense({units: 50, activation: 'selu'}).apply(flat);
-    const dense3 = tf.layers.dense({units: 3, activation: 'selu'}).apply(dense2);
+    // const dense2 = tf.layers.dense({units: 50, activation: 'selu'}).apply(flat);
+    const dense3 = tf.layers.dense({units: 10, activation: 'selu'}).apply(flat);
     // const dense4 = tf.layers.dense({units: 2}).apply(dense3);
     const model = tf.model({inputs: input, outputs: dense3});
     return model;
@@ -44,7 +44,7 @@ function create_time_model() {
     const model = create_model();
     const td = tf.layers.timeDistributed({layer: model}).apply(input);
     // const lstm1 = tf.layers.lstm({units: 128, returnSequences: true}).apply(td);
-    const lstm2 = tf.layers.lstm({units: 256, returnSequences: false}).apply(td);
+    const lstm2 = tf.layers.lstm({units: 16, returnSequences: false}).apply(td);
     // const flat = tf.layers.flatten().apply(lstm);
 
     const concat = tf.layers.concatenate().apply([lstm2, dense_vel])
@@ -160,7 +160,7 @@ async function load_train_set(buffer, predict) {
 }
 
 // Generators for training data
-const bufferSize = 512;
+var bufferSize = 128;
 async function* train_generator() {
     // Get inverted and normalized label histogram
     let label_hist_invert = invert_hist(label_hist);
@@ -199,6 +199,79 @@ async function* train_generator() {
     }
 }
 
+function get_roc(true_list, false_list) {
+    let roc_x = [];
+    let g_means = [];
+    for (let th = 0; th <= 1; th += 0.025) {
+        roc_x.push( th );
+
+        let n_true = 0;
+        for (let idx = 0; idx < true_list.length; idx++) {
+            if (true_list[idx] > th) {
+                n_true++;
+            }
+        }
+
+        let n_false = 0;
+        for (let idx = 0; idx < false_list.length; idx++) {
+            if (false_list[idx] > th) {
+                n_false++;
+            }
+        }
+        g_means.push((n_true / true_list.length) * (1 - (n_false / false_list.length)));
+    }
+
+    // console.log(roc_x);
+    // console.log(g_means);
+    return roc_x[ g_means.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0) ];
+}
+
+async function calculate_roc() {
+    tf.engine().startScope();
+    let roc_true = {'w': [], 'a': [], 's': [], 'd': []};
+    let roc_false = {'w': [], 'a': [], 's': [], 'd': []};
+
+    let img = [];
+    let vel = [];
+    let label = [];
+
+    bufferSize = 1024;
+    const it = train_generator();
+    for (let idx = 0; idx < bufferSize; idx++) {
+        let event = (await it.next()).value;
+        img.push(event.xs.input1);
+        vel.push(event.xs.input2);
+        label.push(event.ys);
+    }
+
+    let pred = await model.predict([tf.stack(img), tf.stack(vel)]).arraySync();
+    for (let b = 0; b < pred.length; b++) {
+        let input = label[b];
+        input[0] ? roc_true.w.push(pred[b][0]) : roc_false.w.push(pred[b][0]);
+        input[1] ? roc_true.a.push(pred[b][1]) : roc_false.a.push(pred[b][1]);
+        input[2] ? roc_true.s.push(pred[b][2]) : roc_false.s.push(pred[b][2]);
+        input[3] ? roc_true.d.push(pred[b][3]) : roc_false.d.push(pred[b][3]);    
+    }
+
+    console.log(roc_true.a);
+    let ths = {
+        w: get_roc(roc_true.w, roc_false.w),
+        a: get_roc(roc_true.a, roc_false.a),
+        s: get_roc(roc_true.s, roc_false.s),
+        d: get_roc(roc_true.d, roc_false.d),
+    }
+
+    tf.engine().endScope();
+    console.log(ths);
+    return ths;
+}
+
+var thresholds = {
+    w: 0.5,
+    a: 0.2,
+    s: 0.1,
+    d: 0.2,
+}
 export async function train_network() {
     if(image_buffer.length <= 5) return;
 
@@ -208,7 +281,8 @@ export async function train_network() {
     training_div.style.visibility = 'visible';
 
     // Loop over epochs
-    for (let i = 0; i < 10; i++) {
+    bufferSize = 128;
+    for (let i = 0; i < 30; i++) {
         tf.engine().startScope();
         // console.log(tf.memory());
     
@@ -219,8 +293,10 @@ export async function train_network() {
 
         // console.log(tf.memory());
         tf.engine().endScope();
-        training_progress.value = (i + 1) * 10;
+        training_progress.value = (i + 1) * 100 / 30;
     }
+
+    thresholds = await calculate_roc();
 
     isTraining = false;
     training_div.style.visibility = 'hidden';
@@ -272,10 +348,10 @@ export async function predict_frame() {
     // let pred = await model.predict([tensors.image, tensors.velocity]).dataSync();
     let pred = await model.predict([tf.stack([tf.stack(predict_img_buffer)]), tf.stack([predict_velocity_buffer])]).dataSync();
     let keysPressed = {'w': false, 'a': false, 's': false, 'd': false}
-    if (pred[0] > 0.5) keysPressed.w = true;
-    if (pred[1] > 0.4) keysPressed.a = true;
-    if (pred[2] > 0.1) keysPressed.s = true;
-    if (pred[3] > 0.4) keysPressed.d = true;
+    if (pred[0] > thresholds.w) keysPressed.w = true;
+    if (pred[1] > thresholds.a) keysPressed.a = true;
+    if (pred[2] > thresholds.s) keysPressed.s = true;
+    if (pred[3] > thresholds.d) keysPressed.d = true;
 
     // Give brakes higher priority
     if (keysPressed.w & keysPressed.s) {

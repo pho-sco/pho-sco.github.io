@@ -90,7 +90,7 @@ for (const model of Object.values(models)) {
 
 var goal_trigger;
 function init() {
-    camera = new THREE.PerspectiveCamera(30, ui_container.clientWidth / ui_container.clientHeight, 0.1, 100);
+    camera = new THREE.PerspectiveCamera(35, ui_container.clientWidth / ui_container.clientHeight, 0.1, 100);
     camera.position.set(0, 0.5, 2);
     const cameraHelper = new THREE.CameraHelper(camera);
 
@@ -294,17 +294,12 @@ function synth_init() {
 // KEY CONTROLS
 const keysPressed = {}
 var predict = false;
-var train = false;
 document.addEventListener('keydown', (event) => {
     keysPressed[event.key.toLowerCase()] = true;
 
     if (event.shiftKey) {
         predict = true;
         predict_label.style.visibility = 'visible';
-    }
-
-    if (event.ctrlKey) {
-        train = true;
     }
 }, false);
 
@@ -314,10 +309,6 @@ document.addEventListener('keyup', (event) => {
     if (!event.shiftKey) {
         predict = false;
         predict_label.style.visibility = 'hidden';
-    }
-
-    if (!event.ctrlKey) {
-        train = false;
     }
 }, false);
 
@@ -389,7 +380,7 @@ function reset_player() {
     rotateQuarternion.setFromAxisAngle(rotate_axis, 0);
     player.setRotationFromQuaternion( rotateQuarternion );
 
-    set_camera(3);
+    set_camera(2.5);
     start_lights_reset();
     start_lights_animate();
     lap_time = 0;
@@ -486,7 +477,7 @@ function update(delta, keysPressed, predict) {
         synth.setNote(Math.sqrt(velocity)*30);
     }
 
-    set_camera(3);
+    set_camera(2.5);
     // particles.set_particles_to(player.position);
 
     // Update text
@@ -534,20 +525,20 @@ async function render() {
     const delta = clock.getDelta();
 
     // Train the network
+    /*
     if (train) {
         await train_network();
     }
+    */
 
     renderer.render(scene, camera);
     renderer_small.render(scene, camera);
 
     // Get input from keyboard or network
-    if (predict & !isPredicting) {
+    if ((predict & !isPredicting)) {
         add_prediction_frame(renderer_small.domElement.toDataURL(), velocity / 10);
         if (skip_cnt > Math.ceil(120 / (1 / delta))) {
-            predict_frame().then((res) => {
-                input = res;
-            });
+            predict_frame().then((res) => { input = res; });
             skip_cnt = 0;
         } else {
             skip_cnt++;

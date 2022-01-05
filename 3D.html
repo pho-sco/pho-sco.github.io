@@ -137,7 +137,7 @@
                     The training itself is performed in a loop of 10 iterations. A buffer of 512 is randomly filled with images for each iteration. Aftwerwards, the network is trained for 1 epoch with a batch size of 8. 
                 </p>
                 <p>
-                    The network is a combination of a CNN and RNN. 5 images are simultaneously used as input to the network. Featues for each image are extracted via a CNN. A time-distributed layer provides theses outputs to a LSTM. An input consisting of velocity values is concatenated and the desired output size of 4 is achieved via dense layers. Each value represents the probability one of the four directional buttons are pressed. The output has a softmax activation and the optimization is performed via Adam and a categorical cross entropy loss.
+                    The network is a combination of a CNN and RNN. 5 images are simultaneously used as input to the network. Featues for each image are extracted via a CNN. A time-distributed layer provides theses outputs to a LSTM. An input consisting of velocity values is concatenated and the desired output size of 4 is achieved via dense layers. Each value represents the probability one of the four directional buttons are pressed. The output has a softmax activation and the optimization is performed via Adam and a categorical cross entropy loss. Once the network is trained, a prediction on the training data is made and a ROC curve calculated. The thresholds when a button is triggered are finally calculated via this curve.
                 </p>
             </div>
         </div>
